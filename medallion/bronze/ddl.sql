@@ -1,17 +1,20 @@
 /*
 ===============================================================================
-DDL Script: Create Bronze Tables
+Bronze Layer DDL
 ===============================================================================
-Script Purpose:
-    This script creates tables in the 'bronze' schema, dropping existing tables 
-    if they already exist.
-	  Run this script to re-define the DDL structure of 'bronze' Tables
+Brief introduction:
+    This script creates the raw bronze tables used to store source data for the
+    Zomato warehouse analytics project. It drops existing bronze tables first so
+    the schema can be recreated cleanly.
 ===============================================================================
 */
+
+-- Drop existing table if it already exists before recreating it.
 IF OBJECT_ID('bronze.order_items', 'U') IS NOT NULL
     DROP TABLE bronze.order_items;
 GO
 
+-- Raw order item records from source data.
 CREATE TABLE bronze.order_items(
 order_item_id INT,
 order_id INT,
@@ -23,10 +26,12 @@ line_amount DECIMAL(10,2)
 );
 GO
 --------------------------------------------------------
+-- Drop and recreate orders table.
 IF OBJECT_ID('bronze.orders', 'U') IS NOT NULL
     DROP TABLE bronze.orders;
 GO
 
+-- Order-level fact data captured from the source system.
 CREATE TABLE bronze.orders (
     order_id            INT,
     order_timestamp     DATETIME2(0),
@@ -50,10 +55,12 @@ CREATE TABLE bronze.orders (
 );
 
 -----------------------------------------------------
+-- Drop and recreate reviews table.
 IF OBJECT_ID('bronze.reviews', 'U') IS NOT NULL
     DROP TABLE bronze.reviews;
 GO
 
+-- Customer review details linked to orders.
 CREATE TABLE bronze.reviews (
     review_id       INT,
     order_id        INT,
@@ -65,10 +72,12 @@ CREATE TABLE bronze.reviews (
 );
 ----------------------------------------------------------
 
+-- Drop and recreate menu table.
 IF OBJECT_ID('bronze.menu', 'U') IS NOT NULL
     DROP TABLE bronze.menu;
 GO
 
+-- Raw menu catalog imported from source.
 CREATE TABLE bronze.menu (
     source_row_id VARCHAR(50),
     menu_id       VARCHAR(20),
@@ -79,10 +88,12 @@ CREATE TABLE bronze.menu (
 );
 ------------------------------------------------------------
 
+-- Drop and recreate users table.
 IF OBJECT_ID('bronze.users', 'U') IS NOT NULL
     DROP TABLE bronze.users;
 GO
 
+-- User profile data as ingested from source.
 CREATE TABLE bronze.users (
     source_row_id INT,
     user_id                      INT,
@@ -98,10 +109,12 @@ CREATE TABLE bronze.users (
     family_size                  INT
 );
 -----------------------------------------------------
+-- Drop and recreate restaurants table.
 IF OBJECT_ID('bronze.restaurants', 'U') IS NOT NULL
     DROP TABLE bronze.restaurants;
 GO
 
+-- Restaurant metadata from source systems.
 CREATE TABLE bronze.restaurants (
     source_row_id   VARCHAR(50),
     r_id            VARCHAR(50),
@@ -117,10 +130,12 @@ CREATE TABLE bronze.restaurants (
     menu_path       VARCHAR(100)
 );
 -------------------------------------------------------
+-- Drop and recreate food items table.
 IF OBJECT_ID('bronze.food_items', 'U') IS NOT NULL
     DROP TABLE bronze.food_items;
 GO
 
+-- Food item reference data loaded from source.
 CREATE TABLE bronze.food_items (
     source_row_id INT,
     f_id            VARCHAR(20),
